@@ -3,12 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة شط العرب التعليمية V5.0 - النسخة السحابية</title>
+    <title>منصة شط العرب التعليمية V5.0</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     
     <style>
         :root {
@@ -72,8 +69,8 @@
         .active-section { display: block; }
 
         .chat-box {
-            height: calc(100% - 130px); overflow-y: auto; padding: 15px;
-            background: rgba(0,0,0,0.2); border-radius: 10px; margin-bottom: 10px; border: 1px solid #334155;
+            height: calc(100% - 60px); overflow-y: auto; padding: 15px;
+            background: rgba(0,0,0,0.2); border-radius: 10px; margin-bottom: 10px;
         }
         .msg { padding: 8px 12px; margin: 5px 0; border-radius: 8px; max-width: 80%; width: fit-content; font-size: 0.9rem; }
         .msg.me { background: var(--primary); color: black; margin-right: auto; }
@@ -83,6 +80,7 @@
         th, td { padding: 12px; border: 1px solid #4b5563; text-align: center; }
         th { background: #374151; color: var(--accent); }
 
+        /* --- ملاحظات --- */
         .note-card {
             background: #374151; padding: 10px; margin-bottom: 10px; border-radius: 8px;
             border-right: 4px solid var(--primary);
@@ -95,15 +93,20 @@
     <div class="login-card">
         <i class="fas fa-graduation-cap fa-3x" style="color:var(--primary); margin-bottom:15px;"></i>
         <h2>مدارس شط العرب</h2>
-        <p style="opacity:0.7">النظام الإداري V5.0 (Cloud)</p>
+        <p style="opacity:0.7">النظام الإداري V5.0</p>
         
         <input type="text" id="log-user" placeholder="اسم المستخدم">
         <input type="password" id="log-pass" placeholder="كلمة المرور">
-        <button class="btn" onclick="app.login()">دخول آمن سحابياً</button>
+        <button class="btn" onclick="app.login()">دخول آمن</button>
+        
+        <div style="margin-top:20px; font-size:0.8rem; color:#6b7280; border-top:1px solid #333; padding-top:10px;">
+            للأدمن: admin / 951357094
+        </div>
     </div>
 </div>
 
 <div id="app-container" style="display:none; width:100%; height:100%;">
+    
     <div class="sidebar">
         <div style="text-align:center; margin-bottom:20px;">
             <h3 id="u-name" style="color:var(--accent)">مستخدم</h3>
@@ -133,15 +136,19 @@
     <div class="main-content">
         <div class="top-bar">
             <h3 id="page-title">الرئيسية</h3>
-            <div id="status-cloud" style="color:#10b981; font-size:0.8rem;"><i class="fas fa-cloud"></i> متصل بالسحابة</div>
+            <div><i class="fas fa-bell" style="color:var(--accent)"></i></div>
         </div>
 
         <div id="p-dashboard" class="page-section active-section">
-            <h1>👋 أهلاً بك في نظام شط العرب السحابي</h1>
+            <h1>👋 أهلاً بك في نظام شط العرب</h1>
             <div style="display:flex; gap:20px; flex-wrap:wrap; margin-top:20px;">
                 <div style="flex:1; background:#374151; padding:20px; border-radius:10px;">
                     <h3><i class="fas fa-bullhorn"></i> آخر التبليغات</h3>
                     <div id="latest-announce" style="font-size:0.9rem; opacity:0.8;">لا توجد تبليغات جديدة</div>
+                </div>
+                <div style="flex:1; background:#374151; padding:20px; border-radius:10px;">
+                    <h3><i class="fas fa-trophy"></i> الطالب الأول</h3>
+                    <div id="top-student-name" style="color:var(--accent); font-size:1.2rem; font-weight:bold;">-</div>
                 </div>
             </div>
         </div>
@@ -162,7 +169,7 @@
 
         <div id="p-grades" class="page-section">
             <h3>رصد الدرجات</h3>
-            <input type="text" id="g-st" placeholder="اسم الطالب الثلاثي">
+            <input type="text" id="g-st" placeholder="اسم الطالب الثلاثي (الموجود في النظام)">
             <select id="g-sub">
                 <option>إسلامية</option><option>عربي</option><option>إنكليزي</option><option>رياضيات</option>
                 <option>فيزياء</option><option>كيمياء</option><option>أحياء</option><option>حاسوب</option>
@@ -173,257 +180,354 @@
                 <input type="number" id="sc3" placeholder="نصف"><input type="number" id="sc4" placeholder="ف2-1">
                 <input type="number" id="sc5" placeholder="ف2-2">
             </div>
-            <button class="btn" onclick="app.saveGrade()">حفظ في السحابة</button>
+            <button class="btn" onclick="app.saveGrade()">حفظ الدرجة</button>
         </div>
 
         <div id="p-notes" class="page-section">
             <h3>سجل ملاحظات الطالب</h3>
             <input type="text" id="n-st" placeholder="اسم الطالب">
-            <textarea id="n-txt" placeholder="اكتب الملاحظة..."></textarea>
-            <button class="btn" onclick="app.addNote()">إضافة ملاحظة سحابية</button>
+            <textarea id="n-txt" placeholder="اكتب الملاحظة (سلوك، غياب، تقييم)..."></textarea>
+            <button class="btn" onclick="app.addNote()">إضافة م��احظة للسجل</button>
             <hr style="border-color:#374151; margin:20px 0;">
+            <h4>سجل الملاحظات السابق:</h4>
             <div id="notes-list"></div>
         </div>
 
         <div id="p-users" class="page-section">
-            <h3>إدارة الحسابات سحابياً</h3>
+            <h3>إضافة مستخدم جديد</h3>
             <input type="text" id="u-new-name" placeholder="الاسم الكامل">
             <input type="text" id="u-new-user" placeholder="User (للدخول)">
             <input type="text" id="u-new-pass" placeholder="Pass">
             <select id="u-new-role"><option value="student">طالب</option><option value="teacher">مدرس</option></select>
-            <button class="btn" onclick="app.addUser()">إنشاء حساب سحابي</button>
+            <button class="btn" onclick="app.addUser()">إنشاء حساب</button>
             <div id="users-list" style="margin-top:20px;"></div>
         </div>
 
         <div id="p-settings" class="page-section">
-            <h3>💾 النسخ الاحتياطي السحابي</h3>
-            <button class="btn" onclick="app.exportData()" style="background:#10b981;">📥 تحميل نسخة من السحابة</button>
+            <h3>💾 النسخ الاحتياطي للنظام</h3>
+            <p>قم بتحميل ملف البيانات لحفظه في جهازك، واستخدمه لاسترجاع النظام في حال مسح المتصفح.</p>
+            <button class="btn" onclick="app.exportData()" style="background:#10b981;">📥 تحميل نسخة احتياطية (ملف)</button>
+            <hr>
+            <h3>♻️ استرجاع البيانات</h3>
+            <input type="file" id="import-file" style="background:#374151">
+            <button class="btn" onclick="app.importData()" style="background:#3b82f6;">استرجاع البيانات من ملف</button>
+            <hr>
+            <button class="btn btn-danger" onclick="app.resetSystem()">⚠️ تصفير المصنع (حذف كل شيء)</button>
         </div>
 
         <div id="p-my-result" class="page-section">
             <div id="cert-print" style="background:white; color:black; padding:30px; border:10px double var(--primary);">
                 <div style="text-align:center; border-bottom:2px solid black; padding-bottom:10px;">
-                    <h2>مدارس شط العرب النموذجية</h2>
+                    <h2>جمهورية العراق - وزارة التربية</h2>
+                    <h3>مدارس شط العرب النموذجية</h3>
                     <p>وثيقة درجات للعام الدراسي 2025-2026</p>
                 </div>
                 <h3 id="cert-name" style="margin-top:20px;">الطالب: </h3>
                 <table style="width:100%; border:1px solid black; margin-top:20px;">
-                    <thead><tr style="background:#eee;"><th>المادة</th><th>الدرجات</th><th>المعدل</th></tr></thead>
+                    <thead><tr style="background:#eee;"><th>المادة</th><th>الدرجات (5 أشهر)</th><th>المعدل</th></tr></thead>
                     <tbody id="cert-body"></tbody>
                 </table>
-                <div id="cert-notes-area" style="margin-top:20px; font-size:0.9rem;"></div>
+                <div style="margin-top:30px; display:flex; justify-content:space-between;">
+                    <strong>ملاحظات الإدارة:</strong>
+                    <div id="cert-notes-area"></div>
+                </div>
             </div>
             <button class="btn" onclick="app.printCert()">طباعة PDF</button>
         </div>
+
     </div>
 </div>
 
-<script>
-    // --- إعدادات Firebase ---
+<script type="module">
+    // Firebase modular imports (CDN)
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
+    import { getAnalytics } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics.js';
+    import { getStorage, ref, uploadString, getDownloadURL } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js';
+
     const firebaseConfig = {
-        apiKey: "AIzaSyDjps8vgN3n-TlvJBUW87u_zjhkO_hxCJE",
-        authDomain: "shatt-school.firebaseapp.com",
-        databaseURL: "https://shatt-school-default-rtdb.firebaseio.com",
-        projectId: "shatt-school",
-        storageBucket: "shatt-school.firebasestorage.app",
-        messagingSenderId: "484274570535",
-        appId: "1:484274570535:web:8e780b61c5975ee8e2d502"
+      apiKey: "AIzaSyDjps8vgN3n-TlvJBUW87u_zjhkO_hxCJE",
+      authDomain: "shatt-school.firebaseapp.com",
+      databaseURL: "https://shatt-school-default-rtdb.firebaseio.com",
+      projectId: "shatt-school",
+      storageBucket: "shatt-school.firebasestorage.app",
+      messagingSenderId: "484274570535",
+      appId: "1:484274570535:web:8e780b61c5975ee8e2d502",
+      measurementId: "G-LBJHS61HSH"
     };
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+    // Initialize Firebase
+    const firebaseApp = initializeApp(firebaseConfig);
+    try { var analytics = getAnalytics(firebaseApp); } catch(e){ /* Analytics may fail on some hosts */ }
+    const storage = getStorage(firebaseApp);
+
+    const DB_NAME = 'ShattArabV5_DB';
 
     const app = {
+        data: { users: [], grades: {}, notes: {}, chats: { general:[], announce:[], staff:[] } },
         currentUser: null,
         currentRoom: 'general',
+        timer: null,
+
+        init: function() {
+            const saved = localStorage.getItem(DB_NAME);
+            if(saved) {
+                this.data = JSON.parse(saved);
+            } else {
+                // بيانات أولية
+                this.data.users.push({name:'المدير العام', user:'admin', pass:'951357094', role:'admin'});
+                this.save();
+            }
+        },
+
+        save: function() {
+            localStorage.setItem(DB_NAME, JSON.stringify(this.data));
+        },
 
         login: function() {
             const u = document.getElementById('log-user').value;
             const p = document.getElementById('log-pass').value;
-
-            // حساب المدير الافتراضي
-            if(u === 'admin' && p === '951357094') {
-                this.currentUser = {name:'المدير العام', user:'admin', role:'admin'};
-                this.launch();
-                return;
-            }
-
-            db.ref('users').once('value', (snap) => {
-                const users = snap.val();
-                let found = false;
-                for(let id in users) {
-                    if(users[id].user === u && users[id].pass === p) {
-                        this.currentUser = users[id];
-                        found = true;
-                        this.launch();
-                        break;
-                    }
-                }
-                if(!found) alert('معلومات الدخول خاطئة');
-            });
-        },
-
-        launch: function() {
-            document.getElementById('login-overlay').style.display = 'none';
-            document.getElementById('app-container').style.display = 'flex';
-            document.getElementById('u-name').innerText = this.currentUser.name;
-            document.getElementById('u-role').innerText = this.currentUser.role;
+            const user = this.data.users.find(x => x.user === u && x.pass === p);
             
-            if(this.currentUser.role === 'admin') document.getElementById('admin-menu').style.display = 'block';
-            if(['admin','teacher'].includes(this.currentUser.role)) document.getElementById('staff-menu').style.display = 'block';
-            if(this.currentUser.role === 'student') {
-                document.getElementById('student-menu').style.display = 'block';
-                document.getElementById('btn-staff-chat').style.display = 'none';
+            if(user) {
+                this.currentUser = user;
+                document.getElementById('login-overlay').style.display = 'none';
+                document.getElementById('app-container').style.display = 'flex';
+                document.getElementById('u-name').innerText = user.name;
+                document.getElementById('u-role').innerText = user.role === 'admin' ? 'مدير' : (user.role === 'teacher' ? 'مدرس' : 'طالب');
+                
+                // صلاحيات القوائم
+                if(user.role === 'admin') document.getElementById('admin-menu').style.display = 'block';
+                if(['admin','teacher'].includes(user.role)) document.getElementById('staff-menu').style.display = 'block';
+                if(user.role === 'student') {
+                    document.getElementById('student-menu').style.display = 'block';
+                    document.getElementById('btn-staff-chat').style.display = 'none';
+                }
+
+                this.nav('dashboard');
+                this.startChatLoop();
+            } else {
+                alert('خطأ في المعلومات');
             }
-            this.nav('dashboard');
-            this.syncChat();
-            this.syncAnnouncements();
         },
 
         nav: function(pageId) {
             document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active-section'));
             document.getElementById('p-'+pageId).classList.add('active-section');
             document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
-            document.getElementById('page-title').innerText = pageId;
+            try { event.currentTarget.classList.add('active'); } catch(e){}
+            
             if(pageId === 'users') this.renderUsers();
             if(pageId === 'my-result') this.renderCert();
-            if(pageId === 'notes') this.renderAllNotes();
+            if(pageId === 'dashboard') this.updateDashboard();
         },
 
+        // --- إدارة المستخدمين ---
         addUser: function() {
-            const data = {
-                name: document.getElementById('u-new-name').value,
-                user: document.getElementById('u-new-user').value,
-                pass: document.getElementById('u-new-pass').value,
-                role: document.getElementById('u-new-role').value
-            };
-            db.ref('users').push(data);
-            alert('تم إنشاء الحساب سحابياً');
+            const name = document.getElementById('u-new-name').value;
+            const user = document.getElementById('u-new-user').value;
+            const pass = document.getElementById('u-new-pass').value;
+            const role = document.getElementById('u-new-role').value;
+            
+            if(this.data.users.find(x => x.user === user)) return alert('اسم المستخدم موجود مسبقاً');
+            
+            this.data.users.push({name, user, pass, role});
+            this.save();
+            alert('تم إنشاء الحساب');
+            this.renderUsers();
         },
 
         renderUsers: function() {
-            db.ref('users').on('value', (snap) => {
-                const list = document.getElementById('users-list');
-                list.innerHTML = '';
-                const users = snap.val();
-                for(let id in users) {
-                    list.innerHTML += `<div style="background:#374151; padding:10px; margin:5px 0; border-radius:5px;">${users[id].name} (${users[id].role})</div>`;
-                }
-            });
+            const list = document.getElementById('users-list');
+            list.innerHTML = this.data.users.map(u => 
+                `<div style="background:#374151; padding:10px; margin:5px 0; border-radius:5px; display:flex; justify-content:space-between;">
+                    <span>${u.name} (${u.role})</span>
+                    <span style="color:#f59e0b">${u.user}</span>
+                </div>`
+            ).join('');
         },
 
+        // --- الدرجات والملاحظات ---
         saveGrade: function() {
             const st = document.getElementById('g-st').value;
             const sub = document.getElementById('g-sub').value;
-            const scores = [1,2,3,4,5].map(i => document.getElementById('sc'+i).value || 0);
-            db.ref(`grades/${st}/${sub}`).set(scores);
-            alert('تم حفظ الدرجات سحابياً');
+            const scores = [1,2,3,4,5].map(i => document.getElementById('sc'+i).value);
+            
+            if(!this.data.grades[st]) this.data.grades[st] = {};
+            this.data.grades[st][sub] = scores;
+            this.save();
+            alert('تم الحفظ');
         },
 
         addNote: function() {
             const st = document.getElementById('n-st').value;
             const txt = document.getElementById('n-txt').value;
-            db.ref(`notes/${st}`).push({
+            if(!st || !txt) return;
+
+            if(!this.data.notes[st]) this.data.notes[st] = [];
+            this.data.notes[st].push({
                 writer: this.currentUser.name,
                 text: txt,
                 date: new Date().toLocaleDateString('ar-IQ')
             });
-            alert('تمت إضافة الملاحظة للسحابة');
+            this.save();
+            alert('تمت إضافة الملاحظة للسجل');
+            
+            // تحديث العرض المباشر للملاحظات (تجريبي)
+            const list = document.getElementById('notes-list');
+            list.innerHTML = `<div class="note-card"><small>${new Date().toLocaleDateString()}</small><br>${txt}</div>` + list.innerHTML;
         },
 
-        renderAllNotes: function() {
-            db.ref('notes').on('value', (snap) => {
-                const list = document.getElementById('notes-list');
-                list.innerHTML = '<h4>آخر الملاحظات المسجلة:</h4>';
-                const allNotes = snap.val();
-                for(let st in allNotes) {
-                    for(let id in allNotes[st]) {
-                        list.innerHTML += `<div class="note-card"><b>${st}:</b> ${allNotes[st][id].text} <br><small>بواسطة: ${allNotes[st][id].writer}</small></div>`;
-                    }
-                }
-            });
-        },
-
+        // --- الدردشة ---
         setRoom: function(r) {
+            if(r === 'staff' && this.currentUser.role === 'student') return alert('غير مسموح');
             this.currentRoom = r;
-            document.getElementById('room-name').innerText = r === 'general' ? 'العامة' : (r === 'announce' ? 'التبليغات' : 'غرفة الأساتذة');
-            this.syncChat();
+            document.getElementById('room-name').innerText = r === 'general' ? 'العامة' : (r === 'announce' ? 'التبليغات' : 'الأساتذة');
+            this.renderChat();
         },
 
         sendMsg: function() {
             const txt = document.getElementById('chat-input').value;
             if(!txt) return;
-            db.ref(`chats/${this.currentRoom}`).push({
+            if(this.currentRoom === 'announce' && this.currentUser.role === 'student') return alert('للمدير والمدرسين فقط');
+
+            this.data.chats[this.currentRoom].push({
                 user: this.currentUser.name,
-                text: txt
+                role: this.currentUser.role,
+                text: txt,
+                time: new Date().toLocaleTimeString('ar-IQ')
             });
+            if(this.data.chats[this.currentRoom].length > 50) this.data.chats[this.currentRoom].shift();
+            
+            this.save();
             document.getElementById('chat-input').value = '';
+            this.renderChat();
         },
 
-        syncChat: function() {
-            db.ref(`chats/${this.currentRoom}`).on('value', (snap) => {
-                const div = document.getElementById('chat-display');
-                div.innerHTML = '';
-                const msgs = snap.val();
-                for(let id in msgs) {
-                    const m = msgs[id];
-                    div.innerHTML += `<div class="msg ${m.user === this.currentUser.name ? 'me' : 'other'}"><b>${m.user}:</b> ${m.text}</div>`;
+        renderChat: function() {
+            const div = document.getElementById('chat-display');
+            div.innerHTML = (this.data.chats[this.currentRoom] || []).map(m => `
+                <div class="msg ${m.user === this.currentUser.name ? 'me' : 'other'}">
+                    <div style="font-size:0.7rem; opacity:0.7">${m.user}</div>
+                    ${m.text}
+                </div>
+            `).join('');
+            div.scrollTop = div.scrollHeight;
+        },
+
+        startChatLoop: function() {
+            if(this.timer) clearInterval(this.timer);
+            this.timer = setInterval(() => {
+                // إعادة تحميل البيانات من الذاكرة لضمان التزامن بين التبويبات
+                const reloaded = JSON.parse(localStorage.getItem(DB_NAME));
+                if(reloaded) {
+                    this.data.chats = reloaded.chats;
+                    this.renderChat();
+                    
+                    // تحديث التبليغات في الرئيسية
+                    const anns = this.data.chats.announce;
+                    if(anns && anns.length > 0) {
+                        document.getElementById('latest-announce').innerText = anns[anns.length-1].text;
+                    }
                 }
-                div.scrollTop = div.scrollHeight;
-            });
+            }, 2000);
         },
 
-        syncAnnouncements: function() {
-            db.ref('chats/announce').limitToLast(1).on('value', (snap) => {
-                const data = snap.val();
-                if(data) {
-                    const lastMsg = Object.values(data)[0];
-                    document.getElementById('latest-announce').innerText = lastMsg.text;
-                }
-            });
-        },
-
+        // --- الشهادة ---
         renderCert: function() {
             const stName = this.currentUser.name;
             document.getElementById('cert-name').innerText = "الطالب: " + stName;
+            const grades = this.data.grades[stName] || {};
+            const tbody = document.getElementById('cert-body');
+            tbody.innerHTML = '';
             
-            // جلب الدرجات
-            db.ref(`grades/${stName}`).on('value', (snap) => {
-                const grades = snap.val() || {};
-                const tbody = document.getElementById('cert-body');
-                tbody.innerHTML = '';
-                for(let sub in grades) {
-                    const g = grades[sub];
-                    let sum=0, c=0;
-                    g.forEach(v => { if(v) { sum+=parseFloat(v); c++; } });
-                    const avg = c > 0 ? (sum/c).toFixed(1) : '-';
-                    tbody.innerHTML += `<tr><td style="color:black">${sub}</td><td style="color:black">${g.join(' | ')}</td><td style="color:black">${avg}</td></tr>`;
-                }
-            });
+            for(let sub in grades) {
+                const g = grades[sub];
+                let sum=0, c=0;
+                g.forEach(v => {if(v){sum+=parseFloat(v); c++}});
+                const avg = c>0 ? (sum/c).toFixed(1) : '-';
+                tbody.innerHTML += `
+                    <tr>
+                        <td style="color:black">${sub}</td>
+                        <td style="color:black">${g.join(' | ')}</td>
+                        <td style="font-weight:bold; color:black">${avg}</td>
+                    </tr>
+                `;
+            }
 
-            // جلب ملاحظات الطالب
-            db.ref(`notes/${stName}`).on('value', (snap) => {
-                const area = document.getElementById('cert-notes-area');
-                area.innerHTML = '<b>ملاحظات السلوك:</b><br>';
-                const notes = snap.val();
-                for(let id in notes) {
-                    area.innerHTML += `- ${notes[id].text} (${notes[id].date})<br>`;
-                }
-            });
+            const notes = this.data.notes[stName] || [];
+            document.getElementById('cert-notes-area').innerHTML = notes.map(n => 
+                `<div>- ${n.text} (${n.date})</div>`
+            ).join('');
         },
 
-        printCert: function() { html2pdf().from(document.getElementById('cert-print')).save('Shatt_Result.pdf'); },
+        printCert: function() {
+            html2pdf().from(document.getElementById('cert-print')).save('Cert.pdf');
+        },
 
+        updateDashboard: function() {
+            // منطق بسيط لإيجاد الطالب الأول (يمكن تطويره)
+            // هذا مجرد عرض تجريبي
+            document.getElementById('top-student-name').innerText = "جارٍ حساب النتائج...";
+        },
+
+        // --- النظام والنسخ الاحتياطي ---
         exportData: function() {
-            db.ref('/').once('value').then((snap) => {
-                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(snap.val()));
-                const node = document.createElement('a');
-                node.setAttribute("href", dataStr);
-                node.setAttribute("download", "shatt_cloud_backup.json");
-                node.click();
-            });
+            const jsonData = JSON.stringify(this.data);
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(jsonData);
+            const node = document.createElement('a');
+            node.setAttribute("href", dataStr);
+            const filename = "shatt_backup_" + new Date().toISOString().replace(/[:.]/g,'-') + ".json";
+            node.setAttribute("download", filename);
+            document.body.appendChild(node);
+            node.click();
+            node.remove();
+
+            // رفع إلى Firebase Storage (نسخة سحابية)
+            try {
+                const storageRef = ref(storage, 'backups/' + filename);
+                // uploadString with 'raw' format
+                uploadString(storageRef, jsonData, 'raw').then((snapshot) => {
+                    return getDownloadURL(storageRef);
+                }).then((url) => {
+                    alert('تم تحميل النسخة السحابية بنجاح:\n' + url);
+                }).catch(err => {
+                    console.error('خطأ في رفع النسخة السحابية:', err);
+                    alert('تعذر رفع النسخة إلى السحابة. تحقق من إعدادات Firebase في المتصفح.');
+                });
+            } catch (e) {
+                console.error('Firebase upload error', e);
+            }
+        },
+
+        importData: function() {
+            const file = document.getElementById('import-file').files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    localStorage.setItem(DB_NAME, JSON.stringify(imported));
+                    alert('تم استرجاع البيانات بنجاح! سيتم تحديث الصفحة.');
+                    location.reload();
+                } catch(err) {
+                    alert('الملف غير صالح');
+                }
+            };
+            reader.readAsText(file);
+        },
+
+        resetSystem: function() {
+            if(confirm('هل أنت متأكد تماماً؟ سيتم حذف كل شيء!')) {
+                localStorage.removeItem(DB_NAME);
+                location.reload();
+            }
         }
     };
+
+    // تشغيل النظام
+    app.init();
+    // expose globally for inline onclick handlers
+    window.app = app;
 </script>
 </body>
 </html>
